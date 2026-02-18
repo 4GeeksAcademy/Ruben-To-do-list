@@ -12,7 +12,5 @@ import '../styles/index.css'
 import ToDoList from './components/ToDoList';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <ToDoList/>
-  </React.StrictMode>,
+  <ToDoList />
 )

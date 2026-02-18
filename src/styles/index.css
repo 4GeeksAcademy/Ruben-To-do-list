@@ -18,7 +18,7 @@
     display: none;
 }
 
-li:hover .btn-danger{
+li:hover .btn-danger, .completedTask .btn-danger{
     display: inline-block;
 }
 
@@ -30,7 +30,7 @@ ul{
 
 ul li{
     border: 1px solid rgba(128, 128, 128, 0.3);
-    width: 50%;
+    width: 100%;
     margin:auto;
     display: flex;
     padding:10px 0;
@@ -41,7 +41,7 @@ ul li span, ul li div{
 }
 
 ul li span{
-    padding:10px 0 10px 5%;
+    padding:10px 0 10px 3%;
     display: flex;
     justify-content: start;
     align-items: center;
@@ -61,4 +61,13 @@ input{
 
 .conditionalText{
     color: rgba(0, 0, 0, 0.4);
+}
+
+.completedTask{
+    color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.completedTask span {
+    text-decoration: line-through;
 }

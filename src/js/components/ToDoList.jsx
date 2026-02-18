@@ -1,48 +1,84 @@
-import { useState} from "react";
+import { useState, useEffect } from "react";
+import ToDoInput from "./ToDoInput";
+import TaskList from "./TaskList";
 
 
-const ToDoList = () => {
+function ToDoList() {
 
-	const [tareas, setTareas] = useState([])
-	const [nuevaTarea, setNuevaTarea] = useState("")
+	const [newTask, setNewTask] = useState("")
+	const [tasks, setTasks] = useState(() => {
 
-	function cambioInput(e) {
-		setNuevaTarea(e.target.value)
+		const saved = localStorage.getItem('tasks');
+		return saved ? JSON.parse(saved) : [];
+
+	})
+
+	useEffect(() => {
+		localStorage.setItem('tasks', JSON.stringify(tasks));
+	}, [tasks]);
+
+	function idGeneration() {
+		let part1 = Date.now().toString(30);
+		let part2 = Math.random().toString(30).substring(2);
+
+		return part1 + part2;
 	}
 
-	function anadirTarea(e) {
-		if (nuevaTarea.trim() == "" || e.key != "Enter" && e.type != "click") {
+	function changeInput(e) {
+		setNewTask(e.target.value)
+	}
+
+	function addTask(e) {
+
+		if (e.key !== "Enter" && e.type !== "click") {
 			return
 		}
-		setTareas([...tareas, nuevaTarea])
-		setNuevaTarea("");
+		if (newTask.trim() === "") {
+			return
+		}
+
+		let taskToAdd = {
+			"value": newTask,
+			"finished": false,
+			"id": idGeneration()
+		}
+
+		setTasks([...tasks, taskToAdd])
+		setNewTask("");
 
 	}
 
-	function borrarTarea(index) {
-		const tareasActualizadas = tareas.filter((_, indice) => indice !== index)
-		setTareas(tareasActualizadas);
+	function deteleTask(index) {
+		const taskActualizadas = tasks.filter((_, indice) => indice !== index)
+		setTasks(taskActualizadas);
 	}
 
-	const taskList = tareas.map((task, taskIndex) =>
-		<li key={taskIndex} className="w-100">
-			<span>{task}</span>
-			<div className="d-flex justify-content-end px-2">
-				<button className="btn btn-danger" onClick={() => borrarTarea(taskIndex)}>Borrar</button>
-			</div>
-		</li>
-	)
+	function completeTask(index) {
+		const task = tasks[index]
+		const taskList = [...tasks]
+
+
+		if (task.finished) {
+			task.finished = false
+
+			taskList[index] = task;
+			setTasks(taskList);
+			return
+		}
+
+		task.finished = true
+
+		taskList[index] = task;
+		setTasks(taskList);
+
+	}
 
 	return (
 		<div className="container mx-auto text-center">
 			<h1 className="title">To Do List</h1>
-			<div className="w-100 mx-auto d-flex justify-content-center">
-				<input className="w-50 mx-1" type="text" placeholder="Añade una tarea" value={nuevaTarea} onChange={cambioInput} onKeyDown={(e) => anadirTarea(e)} />
-				<button className="btn btn-success" onClick={(e) => anadirTarea(e)}>Añadir</button>
-			</div>
-			<ul className="w-50 mx-auto p-0">
-				{tareas.length === 0 ? <span className="conditionalText fs-2">No hay tareas, añadir tareas</span> : taskList}
-			</ul>
+			<ToDoInput inputValue={newTask} onChangeFunction={changeInput} addTaskFunction={addTask} />
+			<p>Total de tareas: {tasks.length}</p>
+			<TaskList tasks={tasks} deleteTaskFunction={deteleTask} completeTaskFunction={completeTask} />
 		</div>
 	);
 };
